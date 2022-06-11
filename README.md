@@ -1,2 +1,3 @@
-# pocket-styler-discord-bot
-A Discord bot to be used for the Pocket Styler Discord Server
+# High Heels Discord Bot
+
+A Discord bot I'm making to help my practice coding! :)
