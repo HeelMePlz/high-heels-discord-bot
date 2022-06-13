@@ -46,3 +46,27 @@ To run the script for the bot, simply run
 ```bash
 python3 bot.py
 ```
+
+## Running the bot as a process
+
+I use PM2 to run the bot as a process in the background.
+
+To install PM2:
+
+```bash
+npm install -g pm2
+```
+
+In the project directory, start the bot:
+
+```bash
+pm2 start bot.py --interpreter=/usr/bin/python3
+```
+
+### Useful commands
+
+```bash
+pm2 list                list all pm2 processes
+pm2 stop bot.py         stop the bot
+pm2 restart bot.py      restart the bot
+```
