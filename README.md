@@ -2,6 +2,14 @@
 
 A Discord bot I'm making to help me practice coding! :)
 
+## Maintenance
+
+Use the following command to upgrade packages in `requirements.txt`:
+
+```bash
+pip install -U -r requirements.txt
+```
+
 ## Installation
 
 These instructions are mostly for myself, so I can remember how to re-install the project.
