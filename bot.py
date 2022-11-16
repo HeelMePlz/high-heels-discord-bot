@@ -26,13 +26,17 @@ async def hello_user(ctx):
 
 @bot.command(name="save")
 async def save_image(ctx):
-    # generate a name for the image
-    id = uuid.uuid4()
-
-    # get the image from the message and save it
+    # get the image from the message
     for attachment in ctx.message.attachments:
-        await attachment.save(f"images/{id}.jpg")
-    await ctx.send("Image Saved.")
+        if attachment.size < 8000000:
+            # generate a name for the image
+            id = uuid.uuid4()
+
+            # save the image
+            await attachment.save(f"images/{id}.jpg")
+            await ctx.send("Image Saved.")
+        else:
+            await ctx.send("File size too big. Please ensure it is under 8MB.")
 
 
 @bot.command(name="heels")
