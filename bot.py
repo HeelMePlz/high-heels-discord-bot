@@ -26,19 +26,22 @@ async def hello_user(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hello {sender}!")
 
 
-@bot.hybrid_command(name="save", with_app_command=True)
-async def save_image(ctx):
-    # get the image from the message
-    for attachment in ctx.message.attachments:
-        if attachment.size < 8000000:
-            # generate a name for the image
-            id = uuid.uuid4()
+@bot.tree.command()
+async def save_image(interaction: discord.Interaction, attachment: discord.Attachment):
+    if attachment.size < 8000000:
+        # generate a name for the image
+        id = uuid.uuid4()
 
-            # save the image
-            await attachment.save(f"images/{id}.jpg")
-            await ctx.send("Image Saved.")
-        else:
-            await ctx.send("File size too big. Please ensure it is under 8MB.")
+        if os.path.exists("./images/") == False:
+            os.mkdir("images")
+
+        # save the image
+        await attachment.save(f"images/{id}.jpg")
+        await interaction.response.send_message("Image Saved.")
+    else:
+        await interaction.response.send_message(
+            "File size too big. Please ensure it is under 8MB.", ephemeral=True
+        )
 
 
 @bot.hybrid_command(name="heels", with_app_command=True)
