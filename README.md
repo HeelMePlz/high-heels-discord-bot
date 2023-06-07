@@ -78,3 +78,21 @@ pm2 list                list all pm2 processes
 pm2 stop bot.py         stop the bot
 pm2 restart bot.py      restart the bot
 ```
+
+### Troubleshooting
+
+#### ModuleNotFoundError
+
+When starting the bot for the first time, if you get the following error:
+
+```bash
+ModuleNotFoundError: No module named 'discord'
+```
+
+Run the command:
+
+```bash
+pm2 start bot.py --interpreter python3 --interpreter-args -u
+```
+
+This will flush everything [[Stackoverflow]](<https://stackoverflow.com/a/49466103>).
