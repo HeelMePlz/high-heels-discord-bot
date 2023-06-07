@@ -20,13 +20,16 @@ async def on_ready():
     await bot.tree.sync()
 
 
-@bot.tree.command()
+@bot.tree.command(name="hello", description="The bot will say hello to you.")
 async def hello_user(interaction: discord.Interaction):
     sender = interaction.user.mention
     await interaction.response.send_message(f"Hello {sender}!")
 
 
-@bot.tree.command()
+@bot.tree.command(
+    name="save",
+    description="Attach an image of your favourite high heels to save to the bot.",
+)
 async def save_image(interaction: discord.Interaction, attachment: discord.Attachment):
     if attachment.size < 8000000:
         # generate a name for the image
@@ -44,8 +47,8 @@ async def save_image(interaction: discord.Interaction, attachment: discord.Attac
         )
 
 
-@bot.hybrid_command(name="heels", with_app_command=True)
-async def send_image(ctx):
+@bot.tree.command(name="heels", description="See a random picture of high heels!")
+async def send_image(interaction: discord.Interaction):
     # pick a random image from the folder
     images = os.listdir("images/")
     print(images)
@@ -54,7 +57,7 @@ async def send_image(ctx):
 
     # send the image in a message
     file = discord.File(f"images/{image}")
-    await ctx.send(file=file)
+    await interaction.response.send_message(file=file)
 
 
 bot.run(TOKEN)
