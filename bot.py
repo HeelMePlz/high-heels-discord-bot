@@ -4,6 +4,7 @@ import discord
 import uuid
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord import app_commands
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -16,15 +17,16 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f"{bot.user} has connected to Discord!")
+    await bot.tree.sync()
 
 
-@bot.command(name="hello")
-async def hello_user(ctx):
-    sender = ctx.message.author.id
-    await ctx.send(f"Hello <@{sender}>!")
+@bot.tree.command()
+async def hello_user(interaction: discord.Interaction):
+    sender = interaction.user.mention
+    await interaction.response.send_message(f"Hello {sender}!")
 
 
-@bot.command(name="save")
+@bot.hybrid_command(name="save", with_app_command=True)
 async def save_image(ctx):
     # get the image from the message
     for attachment in ctx.message.attachments:
@@ -39,7 +41,7 @@ async def save_image(ctx):
             await ctx.send("File size too big. Please ensure it is under 8MB.")
 
 
-@bot.command(name="heels")
+@bot.hybrid_command(name="heels", with_app_command=True)
 async def send_image(ctx):
     # pick a random image from the folder
     images = os.listdir("images/")
