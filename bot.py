@@ -40,7 +40,10 @@ async def save_image(interaction: discord.Interaction, attachment: discord.Attac
 
         # save the image
         await attachment.save(f"images/{id}.jpg")
-        await interaction.response.send_message("Image Saved.")
+        
+        # respond to the command with the image that was saved
+        file = discord.File(f"images/{id}.jpg")
+        await interaction.response.send_message(content="Image Saved.", file=file)
     else:
         await interaction.response.send_message(
             "File size too big. Please ensure it is under 8MB.", ephemeral=True
