@@ -8,6 +8,7 @@ from discord import app_commands
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
+SPIN_CHANNEL_ID = os.getenv("SPIN_CHANNEL_ID")
 
 intents = discord.Intents.all()
 
@@ -61,6 +62,47 @@ async def send_image(interaction: discord.Interaction):
     # send the image in a message
     file = discord.File(f"images/{image}")
     await interaction.response.send_message(file=file)
+    
+
+@bot.event
+async def on_message(message: discord.Message):
+    if str(message.channel.id) == SPIN_CHANNEL_ID:
+        await message.add_reaction("⬆️")
+        
+@bot.tree.command(name="generate", description="Get the top 10 challenges.")
+async def send_challenges(interaction: discord.Interaction):
+    
+    challenges = await get_challenges()
+    
+    return
+
+async def get_challenges():
+    index = 1
+    challenges = []
+    
+    channel_id = str(SPIN_CHANNEL_ID)
+    channel = bot.get_channel(int(channel_id))
+    
+    async for message in channel.history():
+        
+        count = index
+        #print("count:", count)
+        text = message.content
+        #print("text:", text)
+        reaction = discord.utils.get(message.reactions, emoji="⬆️")
+        #print("reaction:", reaction)
+        reaction_count = reaction.count
+        #print("reaction_count:", reaction_count)
+        username = message.author.name
+        # print("username:", username)
+        
+        challenges.append({"id": count, "challenge": text, "reactions": reaction_count, "user": username})
+        index += 1
+        
+    for challenge in challenges:
+        print(challenge)
+    
+    return challenges
 
 
 bot.run(TOKEN)
