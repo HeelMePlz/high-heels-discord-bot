@@ -71,10 +71,15 @@ async def on_message(message: discord.Message):
             await message.add_reaction("⬆️")
 
 
-@bot.tree.command(name="generate", description="Get the top 10 challenges.")
+@bot.tree.command(
+    name="generate", description="Get the top 10 challenges and 5 extra substitutes."
+)
 async def send_challenges(interaction: discord.Interaction):
     count = 1
     challenges = await sort_challenges()
+
+    channel_id = str(SPIN_CHANNEL_ID)
+    channel = bot.get_channel(int(channel_id))
 
     output = "# Top 10 Challenges:\n"
 
@@ -83,7 +88,15 @@ async def send_challenges(interaction: discord.Interaction):
         output += challenge_output
         count += 1
 
+    subs_output = "# Next 5 Substitutes:\n"
+
+    for challenge in challenges[10:14]:
+        challenge_subs = f"**{count})** {challenge.get('challenge')} - **{challenge.get('reactions')}** ⬆️ - by {challenge.get('username')} -> {challenge.get('link')}\n"
+        subs_output += challenge_subs
+        count += 1
+
     await interaction.response.send_message(output)
+    await channel.send(subs_output)
 
     return
 
@@ -99,20 +112,25 @@ async def get_challenges():
             text = message.content
         else:
             text = message.content[:125] + "..."
-        # print("text:", text)
+        
+        stripped_text = text.replace("\n", "")
+        
+        # print("challenge:", stripped_text)
         reaction = discord.utils.get(message.reactions, emoji="⬆️")
         # print("reaction:", reaction)
         reaction_count = reaction.count
         # print("reaction_count:", reaction_count)
         user_id = message.author.id
+        username = message.author.name
         # print("username:", username)
         message_url = message.jump_url
 
         challenges.append(
             {
-                "challenge": text,
+                "challenge": stripped_text,
                 "reactions": reaction_count,
                 "user": user_id,
+                "username": username,
                 "link": message_url,
             }
         )
