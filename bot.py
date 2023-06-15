@@ -83,19 +83,28 @@ async def send_challenges(interaction: discord.Interaction):
 
     output = "# Top 10 Challenges:\n"
 
-    for challenge in challenges[:9]:
+    for challenge in challenges[:5]:
         challenge_output = f"**{count})** {challenge.get('challenge')} - **{challenge.get('reactions')}** ⬆️ - by <@{challenge.get('user')}> -> {challenge.get('link')}\n"
         output += challenge_output
         count += 1
 
-    subs_output = "# Next 5 Substitutes:\n"
+    # split the top 10 into 2 challenges because of 2000 character limit
+    output2 = ""
 
-    for challenge in challenges[10:14]:
+    for challenge in challenges[6:11]:
+        challenge_output = f"**{count})** {challenge.get('challenge')} - **{challenge.get('reactions')}** ⬆️ - by <@{challenge.get('user')}> -> {challenge.get('link')}\n"
+        output2 += challenge_output
+        count += 1
+
+    subs_output = "# Next 5 Substitute Challenges:\n"
+
+    for challenge in challenges[11:16]:
         challenge_subs = f"**{count})** {challenge.get('challenge')} - **{challenge.get('reactions')}** ⬆️ - by {challenge.get('username')} -> {challenge.get('link')}\n"
         subs_output += challenge_subs
         count += 1
 
     await interaction.response.send_message(output)
+    await channel.send(output2)
     await channel.send(subs_output)
 
     return
@@ -112,9 +121,9 @@ async def get_challenges():
             text = message.content
         else:
             text = message.content[:125] + "..."
-        
+
         stripped_text = text.replace("\n", "")
-        
+
         # print("challenge:", stripped_text)
         reaction = discord.utils.get(message.reactions, emoji="⬆️")
         # print("reaction:", reaction)
@@ -146,8 +155,8 @@ async def sort_challenges():
 
     sorted_challenges = sorted(challenges, key=lambda d: d["reactions"], reverse=True)
 
-    for sorted_challenge in sorted_challenges:
-        print(sorted_challenge)
+    # for sorted_challenge in sorted_challenges:
+    #     print(sorted_challenge)
 
     return sorted_challenges
 
