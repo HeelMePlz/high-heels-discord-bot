@@ -50,23 +50,30 @@ def get_upvotes_from_message(message: discord.Message) -> int:
 
 
 def sort_by_upvotes(messages: list) -> list:
-    return sorted(messages, key=lambda message: get_upvotes_from_message(message), reverse=True)
+    return sorted(
+        messages, key=lambda message: get_upvotes_from_message(message), reverse=True
+    )
+
+
+def challenge_output(index: int, message: discord.Message) -> str:
+    return f"""**{index})** {(message.content[:125] + "...") if len(message.content) > 125 else message.content}
+    **Upvotes**: {get_upvotes_from_message(message)}
+    **Submitted by**: {message.author.display_name}
+    **Link to submission**: {message.jump_url}"""
 
 
 @client.tree.command(
-    name="new_generate", description="An updated version of the generated command."
+    name="generate", description="An updated version of the generated command."
 )
 async def generate_challenges(interaction: discord.Interaction):
     channel = get_spinning_wheel_channel(MY_GUILD)
     messages = await get_messages(channel)
     sorted_messages = sort_by_upvotes(messages)
-    
-    for message in sorted_messages:
-        print(message.content)
 
-    await interaction.response.send_message(
-        "Command Executed Successfully!", ephemeral=True
-    )
+    await interaction.response.send_message("Generating the top 15 challenges now...")
+
+    for index, message in enumerate(sorted_messages[:15]):
+        await channel.send(challenge_output(index + 1, message))
 
 
 client.run(TOKEN)
