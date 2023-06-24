@@ -1,30 +1,16 @@
 import os
 import random
-import discord
 import uuid
-from dotenv import load_dotenv
+
+import discord
 from discord.ext import commands
-from discord import app_commands
+from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-SPIN_CHANNEL_ID = os.getenv("SPIN_CHANNEL_ID")
 
 intents = discord.Intents.all()
-
 bot = commands.Bot(command_prefix="!", intents=intents)
-
-
-@bot.event
-async def on_ready():
-    print(f"{bot.user} has connected to Discord!")
-    await bot.tree.sync()
-
-
-@bot.tree.command(name="hello", description="The bot will say hello to you.")
-async def hello_user(interaction: discord.Interaction):
-    sender = interaction.user.mention
-    await interaction.response.send_message(f"Hello {sender}!")
 
 
 @bot.tree.command(
@@ -62,13 +48,6 @@ async def send_image(interaction: discord.Interaction):
     # send the image in a message
     file = discord.File(f"images/{image}")
     await interaction.response.send_message(file=file)
-
-
-@bot.event
-async def on_message(message: discord.Message):
-    if str(message.channel.id) == SPIN_CHANNEL_ID:
-        if message.author != bot.user:
-            await message.add_reaction("⬆️")
 
 
 bot.run(TOKEN)

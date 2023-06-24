@@ -1,35 +1,37 @@
 import os
-import discord
 
-from dotenv import load_dotenv
+import discord
 from discord import app_commands
+from discord.ext import commands
+from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD = os.getenv("GUILD_ID")
 
-try:
-    MY_GUILD = discord.Object(id=str(GUILD))
-except Exception as e:
-    print(e)
 
+class SpinningWheelChallengeCog(commands.Cog):
+    def __init__(self, client: commands.Bot):
+        self.client = client
 
-class MyClient(discord.Client):
-    def __init__(self, *, intents: discord.Intents):
-        super().__init__(intents=intents)
-        self.tree = app_commands.CommandTree(self)
+    @app_commands.command(
+        name="generate", description="Generate the top 15 challenges."
+    )
+    async def generate_challenges(self, interaction: discord.Interaction):
+        channel = get_spinning_wheel_channel(self.client, discord.Object(id=str(GUILD)))
+        messages = await get_messages(channel)
+        sorted_messages = sort_by_upvotes(messages)
 
-    async def setup_hook(self):
-        self.tree.copy_global_to(guild=MY_GUILD)
-        await self.tree.sync(guild=MY_GUILD)
+        await interaction.response.send_message(
+            "Generating the top 15 challenges now..."
+        )
 
-
-intents = discord.Intents.default()
-client = MyClient(intents=intents)
+        for index, message in enumerate(sorted_messages[:15]):
+            await channel.send(challenge_output(index + 1, message))
 
 
 def get_spinning_wheel_channel(
-    guild: discord.Guild,
+    client, guild: discord.Guild
 ) -> discord.abc.GuildChannel | None:
     for guild in client.guilds:
         for channel in guild.channels:
@@ -62,18 +64,5 @@ def challenge_output(index: int, message: discord.Message) -> str:
     **Link to submission**: {message.jump_url}"""
 
 
-@client.tree.command(
-    name="generate", description="An updated version of the generated command."
-)
-async def generate_challenges(interaction: discord.Interaction):
-    channel = get_spinning_wheel_channel(MY_GUILD)
-    messages = await get_messages(channel)
-    sorted_messages = sort_by_upvotes(messages)
-
-    await interaction.response.send_message("Generating the top 15 challenges now...")
-
-    for index, message in enumerate(sorted_messages[:15]):
-        await channel.send(challenge_output(index + 1, message))
-
-
-client.run(TOKEN)
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(SpinningWheelChallengeCog(client))
