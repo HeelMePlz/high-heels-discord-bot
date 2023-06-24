@@ -16,7 +16,7 @@ class SpinningWheelChallengeCog(commands.Cog):
     @app_commands.command(
         name="generate", description="Generate the top 15 challenges."
     )
-    async def generate_challenges(self, interaction: discord.Interaction):
+    async def generate_challenges(self, interaction: discord.Interaction) -> None:
         channel = get_spinning_wheel_channel(self.client, discord.Object(id=str(GUILD)))
         messages = await get_messages(channel)
         sorted_messages = sort_by_upvotes(messages)

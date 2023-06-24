@@ -11,7 +11,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
-        self.initial_extensions = ["cogs.spinning-wheel-challenge"]
+        self.initial_extensions = ["cogs.high-heels", "cogs.spinning-wheel-challenge"]
 
     async def setup_hook(self):
         for ext in self.initial_extensions:
