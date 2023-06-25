@@ -3,10 +3,6 @@ import os
 import discord
 from discord import app_commands
 from discord.ext import commands
-from dotenv import load_dotenv
-
-load_dotenv()
-GUILD = os.getenv("GUILD_ID")
 
 
 class SpinningWheelChallengeCog(commands.Cog):
@@ -17,7 +13,7 @@ class SpinningWheelChallengeCog(commands.Cog):
         name="generate", description="Generate the top 15 challenges."
     )
     async def generate_challenges(self, interaction: discord.Interaction) -> None:
-        channel = get_spinning_wheel_channel(self.client, discord.Object(id=str(GUILD)))
+        channel = interaction.channel
         messages = await get_messages(channel)
         sorted_messages = sort_by_upvotes(messages)
 
@@ -27,16 +23,6 @@ class SpinningWheelChallengeCog(commands.Cog):
 
         for index, message in enumerate(sorted_messages[:15]):
             await channel.send(challenge_output(index + 1, message))
-
-
-def get_spinning_wheel_channel(
-    client, guild: discord.Guild
-) -> discord.abc.GuildChannel | None:
-    for guild in client.guilds:
-        for channel in guild.channels:
-            if "spinning_wheel_challenge" in channel.name:
-                return channel
-        print("Spinning Wheel Channel not found. Are you sure it exists?")
 
 
 async def get_messages(channel: discord.TextChannel) -> list:
